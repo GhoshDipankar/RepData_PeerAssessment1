@@ -98,8 +98,73 @@ maxinterval <- stepsperinterval[which.max(stepsperinterval$steps),1]
 ```
 ##### The 5-minute interval "835", contains the maximum number of steps on average across all the days in the dataset.
 
-## Imputing missing values
+## Question-3: Imputing missing values
+Note that there are a number of days/intervals where there are missing values (NA). The presence of missing days may introduce bias into some calculations or summaries of the data.
 
+#### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with (NAs)
+
+```r
+totalNA <- sum(is.na(activitydata$steps))
+```
+##### The total number of missing values in the dataset is 2304.
+
+#### 2. Devise a strategy for filling in all of the missing values in the dataset. The strategy does not need to be sophisticated. For example, you could use the mean/median for that day, or the mean for that 5-minute interval, etc.
+##### Stategy: Use of mean for each 5-minute interval across all days. 
+
+#### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in.
+A new data set "activity_noNA" is made from the original data set. 
+A "for loop"" is run over all rows of the data set such that if any NA is found in the variable "steps", it will be replaced by the mean value of steps for that interval.   
+The mean for each 5-minute interval across all days is already been created as the data frame "stepsperinterval" in  Question-2: Part-1.
+
+```r
+activity_noNA <- activitydata
+for (i in seq_along(activity_noNA$steps)) {
+  if (is.na(activity_noNA[i,]$steps)) {
+    activity_noNA[i,]$steps <- stepsperinterval[which(stepsperinterval[,1]==activity_noNA[i,]$interval),2]
+  }
+}
+```
+
+#### 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
+
+Histogram of the total number of steps taken each day by the inputated data frame "activity_noNA":
+
+```r
+totalsteps_noNA <- with(activity_noNA, tapply(steps, date, sum))
+hist(totalsteps_noNA, breaks = 10, col = "lightblue", xlab = "Total Steps", 
+     main = "Total number of steps taken each day (Imputed data with no NA)")  
+```
+
+![](PA1_Reproducible.Research_files/figure-html/Histogram.noNA-1.png)<!-- -->
+  
+Mean of the total number of steps taken per day:
+
+```r
+mean_noNA <- mean(totalsteps_noNA)
+print(mean_noNA)
+```
+
+```
+## [1] 10766.19
+```
+Median of the total number of steps taken per day:
+
+```r
+median_noNA <- median(totalsteps_noNA)
+print(median_noNA)
+```
+
+```
+## [1] 10766.19
+```
+  
+Checking the difference between mean and median estimated from original data and imputed data:
+
+```r
+percentage_diff_mean <- abs(mean_withNA - mean_noNA)*100/mean_withNA
+percentage_diff_median <- abs(median_withNA - median_noNA)*100/median_withNA
+```
+##### The difference between means estimated from original data and imputed data is 0% whereas the difference between medians is 0.0110421%.
 
 
 ## Are there differences in activity patterns between weekdays and weekends?

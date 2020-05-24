@@ -166,5 +166,38 @@ percentage_diff_median <- abs(median_withNA - median_noNA)*100/median_withNA
 ```
 ##### The difference between means estimated from original data and imputed data is 0% whereas the difference between medians is 0.0110421%.
 
+## Question-4: Are there differences in activity patterns between weekdays and weekends?
+Use the dataset with the filled-in missing values for this part.  
 
-## Are there differences in activity patterns between weekdays and weekends?
+#### 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.  
+
+
+```r
+activity_noNA$date <- as.Date(activity_noNA$date)
+activity_noNA$daytype <- 
+  if_else(weekdays(activity_noNA$date)=="Saturday" |
+            weekdays(activity_noNA$date)=="Sunday","weekend", "weekday")
+```
+
+#### 2. Make a panel plot containing a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis).
+
+Creation of a data frame grouped by daytype and then by interval:
+
+
+```r
+steps_daytype <-
+  activity_noNA %>%
+  group_by(daytype, interval)  %>%
+  summarise(meansteps = mean(steps))
+```
+
+Panel polt by ggplot:
+
+```r
+ggplot(steps_daytype, aes(interval, meansteps, color = daytype))+geom_line(lwd=1)+
+  facet_wrap(daytype~.,ncol=1, nrow = 2)+labs(x="Interval", y="Number of steps")+
+  ggtitle("Average number of steps, averaged across all weekday days or weekend days")
+```
+
+![](PA1_Reproducible.Research_files/figure-html/PanelPlot-1.png)<!-- -->
+

@@ -1,7 +1,7 @@
 ---
 title: 'Reproducible Research: Peer Assessment 1'
 author: "Dipankar Ghosh"
-date: "24 May 2020"
+date: "23 May 2020"
 output: 
   html_document: 
     keep_md: yes
@@ -35,7 +35,7 @@ For this part of the assignment, the missing values in the dataset are ignored.
 
 #### 1. Calculate the total number of steps taken per day
 For proper estimation of mean of the total number of steps taken per day,  
-na.rm is made FALSE in order to ignore those days when no data is collected
+na.rm is made FALSE in order to ignore those days when no data is collected.
 
 ```{r}
 totalsteps <- with(activitydata, tapply(steps, date, sum, na.rm = FALSE))
@@ -59,9 +59,25 @@ median_withNA <- median(totalsteps, na.rm = TRUE)
 print(median_withNA)
 ```
 
-## What is the average daily activity pattern?
+## Question-2: What is the average daily activity pattern?
 
-
+#### 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+Preparation od a data frame consisting of intervals and Average number of steps taken, averaged across all days: 
+```{r}
+stepsperinterval <- aggregate(steps~interval, data=activitydata, mean)
+```
+Plot of Daily Avg. Steps with Intervals:
+```{r LinePlot1}
+with(stepsperinterval, 
+     plot(interval, steps, type = "l", col="blue", lwd = 2, xlab="Interval", ylab="Daily Avg. Steps",
+     main = "Average number of steps taken, averaged across all days"))
+```
+  
+#### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```{r max.interval}
+maxinterval <- stepsperinterval[which.max(stepsperinterval$steps),1]
+```
+##### The 5-minute interval "`r maxinterval`", contains the maximum number of steps on average across all the days in the dataset.
 
 ## Imputing missing values
 
